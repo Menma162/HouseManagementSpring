@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>Домоуправление</title>
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous">
+  <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+          crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div th:replace="~{fragments/menu::menu}"></div>
+<div class="container"><br/>
+  <h1>Начисления</h1>
+  <h6><a th:if="${role != null}" href="/Payment/create">Добавить начисления</a></h6><br/>
+  <div>
+    <form action="#" th:object="${filterSearchData}" th:action="@{/Payment/search}" method="post">
+      <input th:field="*{search}" type="number" placeholder="Номер квартиры">&nbsp;
+      <input th:field="*{searchPeriod}" type="text" placeholder="Период">&nbsp;
+      <label>Услуга: </label>
+      <select th:field="*{type}">
+        <option value="${type}" selected="selected"></option>
+        <option th:each="typeItem : ${types}"
+                th:value="${typeItem}"
+                th:text="${typeItem}"></option>
+      </select>&nbsp;
+      <label>Статус оплаты: </label>
+      <select th:field="*{status}">
+        <option value="${status}" selected="selected"></option>
+        <option th:each="statusItem : ${statuses}"
+                th:value="${statusItem}"
+                th:text="${statusItem}"></option>
+      </select>&nbsp;
+      <button type="submit">Фильтровать</button></form>
+  </div><br>
+  <span th:if="${payments.size() == 0}">Список начислений пуст</span>
+  <table th:if="${payments.size() > 0}" class="table table-hover">
+    <thead class="thead-dark">
+    <tr>
+      <td>Номер квартиры</td>
+      <td>Услуга</td>
+      <td>Период</td>
+      <td>Сумма</td>
+      <td>Статус оплаты</td>
+      <td></td>
+      <td></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="payment : ${payments}">
+      <td th:text="${payment.flat.flatNumber}"/>
+      <td th:text="${payment.rate.name}"/>
+      <td th:text="${payment.period}"/>
+      <td th:text="${payment.amount}"/>
+      <td th:if="${payment.status == true}">Оплачено</td>
+      <td th:unless="${payment.status == true}">Не оплачено</td>
+      <td><a class="btn btn-outline-secondary" th:href="@{'/Payment/details/' + ${payment.id}}">Подробнее</a></td>
+      <td><a class="btn btn-outline-info" th:href="@{'/Payment/update/' + ${payment.id}}">Изменить</a></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
